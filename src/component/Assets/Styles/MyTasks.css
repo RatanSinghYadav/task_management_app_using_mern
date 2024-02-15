@@ -1,0 +1,242 @@
+.table-container-desktop {
+    margin-top: 6rem;
+    /* margin-left: 12rem; */
+}
+
+.bi-trash-fill {
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #651FFF;
+}
+
+.inputBox:focus {
+    border: 1px solid rgb(120, 75, 209);
+    box-shadow: none;
+}
+
+/* status */
+
+.Start {
+    background-color: rgb(220, 203, 255);
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: rgb(120, 75, 209);
+    font-weight: 500;
+}
+
+.Ongoing {
+    background-color: rgb(241, 194, 50);
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: whi;
+    font-weight: 500;
+}
+
+.onHold {
+    background-color: rgb(198, 235, 251);
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: rgb(0, 135, 193);
+    font-weight: 500;
+}
+
+.Done {
+    background-color: rgb(3, 127, 76);
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: white;
+    font-weight: 500;
+}
+
+/* end */
+
+/* priority */
+
+.Low {
+    background-color: #D1FADF;
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: #039855;
+    font-weight: 500;
+}
+
+.Medium {
+    background-color: #FBCF6740;
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: #FBA33C;
+    font-weight: 500;
+}
+
+.High {
+    background-color: #FEE4E2;
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: #D92D20;
+    font-weight: 500;
+}
+
+/* end */
+
+
+.bi-pencil-square {
+    color: green;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+table thead tr th {
+    text-align: center;
+}
+
+.mycourses-main-heading {
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 28px;
+    line-height: 1.28571429;
+    font-weight: 600;
+}
+
+.mycoruse-table-container {
+    border: 1px solid rgb(77, 11, 207);
+    /* border-radius: 8px; */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .1);
+}
+
+.table-body {
+    background-color: white;
+}
+
+.courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    /* background-color: rgb(83, 0, 189); */
+    /* background-color: black; */
+}
+
+.courses-table th,
+.courses-table td {
+    padding: 10px;
+    text-align: center;
+}
+
+table thead {
+    color: white;
+    background-color: rgb(77, 11, 207);
+}
+
+
+.viewDetailsOnMyCourse {
+    border: 1px solid rgb(115, 86, 254);
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: black;
+    background-color: white;
+}
+
+.viewDetailsOnMyCourse:hover {
+    border: none;
+    color: white;
+    background-color: #651FFF;
+    padding: 5px 11px 7px 11px;
+}
+
+.closeBtn {
+    border: none;
+    color: white;
+    background-color: #651FFF;
+    padding: 5px 11px 7px 11px;
+}
+
+.closeBtn:hover {
+    border: 1px solid rgb(115, 86, 254);
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: black;
+    background-color: white;
+}
+
+.addTask {
+    border: 1px solid rgb(115, 86, 254);
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: black;
+    background-color: white;
+    border-style: dashed;
+}
+
+.addTask:hover {
+    border-style: outset;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.noData {
+    height: 10rem;
+    width: 15rem;
+    display: flex;
+    margin: 4rem 2rem 2rem 31rem;
+}
+
+.noDataText {
+    margin: -1rem 2rem 2rem 32rem;
+    font-size: x-large;
+    font-weight: 700;
+}
+
+
+/* Desktop view */
+@media screen and (min-width: 769px) {
+    .table-container-mobile {
+        display: none;
+    }
+
+    .table-container-desktop {
+        margin-top: 6rem;
+        /* margin-left: 12rem; */
+    }
+}
+
+/* Mobile view */
+@media screen and (max-width: 768px) {
+    .courses-table {
+        overflow-x: auto;
+        display: block;
+    }
+
+    .courses-table th,
+    .courses-table td {
+        white-space: nowrap;
+    }
+
+    .mycourses-main-heading-mobile {
+        text-align: center;
+        margin-bottom: 32px;
+        font-size: 28px;
+        line-height: 1.28571429;
+        font-weight: 600;
+        margin-top: 6rem;
+    }
+
+    .table-container-desktop {
+        display: none;
+    }
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}

@@ -1,0 +1,120 @@
+.form-heads {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  color: #000;
+  text-align: center;
+  font-family: Lato;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* .profile-form-1 {
+  margin: 10rem 0rem 0rem 0rem;
+} */
+
+
+.profile-link-button {
+  background: #fff;
+  color: #008080;
+  border: 2px solid #008080;
+  cursor: pointer;
+  font-size: 20px;
+  margin-bottom: 8px;
+  width: 475px;
+  height: 60px;
+  margin-top: 20px;
+  border-radius: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.record-button-desc {
+  font-size: 11px;
+}
+
+.buttons-in-profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-link-button {
+  background-color: #fff;
+  color: #008080;
+}
+
+Button {
+  align-content: center;
+}
+
+.div-update-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.userDetailUpdateBtn-1 {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.update-btn-1:hover {
+  width: 180px;
+  height: 50px;
+  background-color: #651FFF;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.update-btn-1 {
+  border: 1px solid #651FFF;
+  width: 180px;
+  height: 50px;
+  background-color: white;
+  color: black;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.update-btn {
+  width: 180px;
+  height: 50px;
+  background-color: #008080;
+  color: #fff;
+}
+
+/* Desktop view */
+@media screen and (min-width: 769px) {
+  .profileEdit-mobile {
+    display: none;
+  }
+
+  .profileEdit-desktop {
+    margin-top: 6rem;
+    /* margin-left: 12rem; */
+  }
+}
+
+/* Mobile view */
+@media screen and (max-width: 768px) {
+
+  .profileEdit-mobile {
+    margin-top: 6rem;
+  }
+
+  .profileEdit-desktop {
+    display: none;
+  }
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}

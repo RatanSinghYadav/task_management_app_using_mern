@@ -1,24 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from "./component/Auth/login";
+import Signup from "./component/Auth/signup";
+import Home from "./component/home";
+import Layout from "./component/Layout/layout";
+import ProfileEdit from "./component/Auth/ProfileEdit";
+import PublicHome from "./component/publicHome";
+import PublicLayout from "./component/Layout/publicLayout";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          {/* User Auth Routes   */}
+          <Route exact path="/login" element={<Login />}></Route>
+          <Route exact path="/signup" element={<Signup />}></Route>
+
+          <Route path="/user/home" element={<Layout />}>
+            <Route exact index element={<Home />}></Route>
+          </Route>
+
+          <Route path="/user/profile" element={<Layout />}>
+            <Route exact index element={<ProfileEdit />}></Route>
+          </Route>
+
+          <Route path="/login" element={<PublicLayout />}>
+            <Route exact index element={<Login />}></Route>
+          </Route>
+
+          <Route path="/signup" element={<PublicLayout />}>
+            <Route exact index element={<Signup />}></Route>
+          </Route>
+
+          <Route path="/" element={<PublicLayout />}>
+            <Route exact index element={<PublicHome />}></Route>
+          </Route>
+
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
