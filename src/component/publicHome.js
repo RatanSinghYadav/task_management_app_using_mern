@@ -133,32 +133,32 @@ const PublicHome = () => {
     // }
 
 
-    // const updateTaskDetail = async () => {
-    //     const { _id, title, descriptions, status, priority } = editDetail;
+    const updateTaskDetail = async () => {
+        const { _id, title, descriptions, status, priority } = editDetail;
 
-    //     try {
-    //         const response = await fetch(`${url}/api/v1/user/tasks/update/${_id}`, {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 'token': localStorage.getItem('token'),
-    //             },
-    //             body: JSON.stringify({
-    //                 title: title,
-    //                 descriptions: descriptions,
-    //                 status: status,
-    //                 priority: priority
-    //             }),
-    //         });
+        try {
+            const response = await fetch(`${url}/api/v1/user/tasks/update/${_id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    'token': localStorage.getItem('token'),
+                },
+                body: JSON.stringify({
+                    title: title,
+                    descriptions: descriptions,
+                    status: status,
+                    priority: priority
+                }),
+            });
 
-    //         const data = await response.json();
-    //         // console.log(data)
-    //         fetchMyAllTask();
+            const data = await response.json();
+            // console.log(data)
+            fetchMyAllTask();
 
-    //     } catch (error) {
-    //         console.error("Error during update Task:", error);
-    //     }
-    // }
+        } catch (error) {
+            console.error("Error during update Task:", error);
+        }
+    }
 
     const editTaskAndClose = () => {
         updateTaskDetail();
