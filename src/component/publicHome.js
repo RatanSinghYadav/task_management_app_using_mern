@@ -49,7 +49,7 @@ const PublicHome = () => {
 
     const showDetails = async (id) => {
 
-        const response = await fetch(`${url}/api/v1/user/getTaskDetail/${id}`, {
+        const response = await fetch(`${url}/api/v1/public/getTaskDetail/${id}`, {
             method: "GET",
             headers: {
                 // 'token': localStorage.getItem('token'),

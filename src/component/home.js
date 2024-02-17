@@ -73,7 +73,7 @@ const Home = () => {
         const response = await fetch(`${url}/api/v1/user/getTaskDetail/${id}`, {
             method: "GET",
             headers: {
-                // 'token': localStorage.getItem('token'),
+                'token': localStorage.getItem('token'),
                 'Content-Type': 'application/json',
             }
         })
