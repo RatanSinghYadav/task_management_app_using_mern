@@ -9,6 +9,11 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
+let departmentName = ['IT', 'Electrical', 'Security', 'Safety', 'HR', 'Sales', 'Store', 'Quality', 'Logistics', 'Accounts', 'Management', 'Purchase', 'Marketing', 'Civil', 'Maintenance'];
+const items = ["Laptop", "Desktop", "Printer", "Scanner", "Networking", "D-365 ERP", "Software/Application", "UPS", "CCTV", "Other Issue"];
+
+
+
 const Home = () => {
     const [myTasks, setMyTasks] = useState([]);
     const [loader, setLoader] = useState(true);
@@ -19,11 +24,16 @@ const Home = () => {
 
     const [task, setTask] = useState({
         title: '',
-        descriptions: '',
-        status: 'Start',
-        priority: 'Low',
+        deptName: '',
+        deptNumber: '',
+        deptEmail: '',
+        assignedTo: '',
         startDate: '',
         dueDate: '',
+        status: '',
+        priority: '',
+        remark: '',
+        descriptions: '',
     })
 
     const handleChange = (e) => {
@@ -33,9 +43,14 @@ const Home = () => {
         })
     }
 
+    const isFieldComplete = () => {
+        const selectedFields = ['title', 'deptName', 'assignedTo', 'status', 'priority'];
+        return selectedFields.every((item) => task[item] !== '');
+    }
+
     const addTask = async () => {
-        const { title, descriptions, priority, status, startDate, dueDate } = task;
-        // console.log(title, descriptions, priority, status, startDate, dueDate)
+        const { title, deptName, deptNumber, deptEmail, assignedTo, descriptions, priority, remark, status, startDate, dueDate } = task;
+        // console.log(title, deptName, deptNumber, deptEmail, assignedTo, descriptions, priority, status, startDate, dueDate)
 
         try {
             const response = await fetch(`${url}/api/v1/user/addTask`, {
@@ -46,8 +61,13 @@ const Home = () => {
                 },
                 body: JSON.stringify({
                     title: title,
+                    deptName: deptName,
+                    deptNumber: deptNumber,
+                    deptEmail: deptEmail,
+                    assignedTo: assignedTo,
                     descriptions: descriptions,
                     priority: priority,
+                    remark: remark,
                     status: status,
                     startDate: startDate,
                     dueDate: dueDate,
@@ -55,8 +75,12 @@ const Home = () => {
             });
 
             const data = await response.json();
-            // console.log(data)
+            console.log(data)
             fetchMyAllTask();
+            setTask({
+                ...task, title: '', deptName: '', deptEmail: '', deptNumber: '', assignedTo: '',
+                descriptions: '', priority: '', remark: '', status: '', startDate: '', dueDate: ''
+            });
 
         } catch (error) {
             console.error("Error during Add Task:", error);
@@ -94,7 +118,7 @@ const Home = () => {
                 },
             });
             const getResponse = await response.json();
-            // console.log(getResponse.tasks);
+            // console.log(getResponse);
 
             setMyTasks(getResponse.tasks);
             setLoader(false);
@@ -158,11 +182,16 @@ const Home = () => {
     const [editDetail, setEditDetail] = useState({
         _id: '',
         title: '',
-        descriptions: '',
-        status: '',
-        priority: '',
+        deptName: '',
+        deptNumber: '',
+        deptEmail: '',
+        assignedTo: '',
         startDate: '',
         dueDate: '',
+        status: '',
+        priority: '',
+        remark: '',
+        descriptions: '',
     });
 
     const showEditModal = () => setEdit(true);
@@ -201,7 +230,7 @@ const Home = () => {
 
 
     const updateTaskDetail = async () => {
-        const { _id, title, descriptions, status, priority } = editDetail;
+        const { _id, title, deptName, deptNumber, deptEmail, assignedTo, descriptions, priority, remark, status, startDate, dueDate } = editDetail;
 
         try {
             const response = await fetch(`${url}/api/v1/user/tasks/update/${_id}`, {
@@ -212,14 +241,21 @@ const Home = () => {
                 },
                 body: JSON.stringify({
                     title: title,
+                    deptName: deptName,
+                    deptNumber: deptNumber,
+                    deptEmail: deptEmail,
+                    assignedTo: assignedTo,
                     descriptions: descriptions,
+                    priority: priority,
+                    remark: remark,
                     status: status,
-                    priority: priority
+                    startDate: startDate,
+                    dueDate: dueDate,
                 }),
             });
 
             const data = await response.json();
-            // console.log(data)
+            console.log(data)
             fetchMyAllTask();
 
         } catch (error) {
@@ -232,6 +268,30 @@ const Home = () => {
         handleEditClose();
     }
 
+    // search tasks
+
+    const [search, setSearch] = useState('');
+
+    const searchTask = myTasks.filter((task) => {
+        return task.title.toLowerCase().includes(search.toLowerCase()) ||
+            task.descriptions.toLowerCase().includes(search.toLowerCase()) ||
+            task.deptName.toLowerCase().includes(search.toLowerCase()) ||
+            task.assignedTo.toLowerCase().includes(search.toLowerCase()) ||
+            task.priority.toLowerCase().includes(search.toLowerCase()) ||
+            task.status.toLowerCase().includes(search.toLowerCase())
+    })
+
+
+    // pagination
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
+    const paginatedTask = searchTask.slice((currentPage - 1) * pageSize, (currentPage * pageSize));
+
+    const totalTask = myTasks.length;
+    const totalPage = Math.ceil(totalTask / pageSize);
+
+
     useEffect(() => {
         fetchMyAllTask();
     }, []);
@@ -240,21 +300,36 @@ const Home = () => {
         <>
 
             {/* desktop view */}
-            <div className="container table-container-desktop">
+            <div className="container-fluid table-container-desktop">
                 <div className='d-flex justify-content-between'>
                     <div className='mycourses-main-heading'>
-                        My Tasks
+                        All Incident
                     </div>
-                    <div>
-                        <button className='addTask' onClick={handleShow}>+ Add Task</button>
+                    <div className='d-flex gap-2'>
+                        <div>
+                            <i className="bi bi-funnel" style={{ fontSize: '1.4rem' }}></i>
+                        </div>
+                        <div>
+                            <i className="bi bi-search mx-1"></i>
+                            <input value={search} onChange={(e) => setSearch(e.target.value)} className='searchBar' placeholder='search...' />
+                        </div>
+                        <div>
+                            <button className='addTask' onClick={handleShow}>+ Add Task</button>
+                        </div>
                     </div>
                 </div>
                 <div className='mycoruse-table-container'>
                     <table className="courses-table">
                         <thead>
                             <tr>
+                                <th>UIIN</th>
                                 <th>Title</th>
+                                <th>Dep. Name</th>
+                                <th>Dep. Number</th>
+                                <th>Dep. Email</th>
+                                <th>Assigned To</th>
                                 <th>Description</th>
+                                <th>Remark</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
                                 <th>Priority</th>
@@ -269,7 +344,7 @@ const Home = () => {
                                     <tr>
                                         <td colSpan='8'>
                                             <div className='circle'>
-                                                <div class="spinner-border">
+                                                <div className="spinner-border">
                                                 </div>
                                                 <strong >Loading...</strong>
                                             </div>
@@ -279,24 +354,30 @@ const Home = () => {
                                 :
                                 <>
                                     {
-                                        myTasks.length === 0 ?
+                                        paginatedTask.length === 0 ?
                                             <>
                                                 <tr>
-                                                    <td colSpan="8" className="image-row">
+                                                    <td colSpan="12" className="image-row">
                                                         <img src={Img} className='noData' alt='nodata' />
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td colSpan="8" className="noDataText">
+                                                    <td colSpan="12" className="noDataText">
                                                         No Data Found!
                                                     </td>
                                                 </tr>
                                             </>
                                             :
-                                            myTasks.map((e) => (
+                                            paginatedTask.reverse().map((e, index) => (
                                                 <tr key={e._id}>
+                                                    <td>UN0{index + 1}</td>
                                                     <td>{e.title}</td>
+                                                    <td>{e.deptName}</td>
+                                                    <td>{e.deptNumber}</td>
+                                                    <td>{e.deptEmail}</td>
+                                                    <td>{e.assignedTo}</td>
                                                     <td>{e.descriptions}</td>
+                                                    <td>{e.remark}</td>
                                                     <td>
                                                         <span>{e.startDate}</span>
                                                     </td>
@@ -324,8 +405,8 @@ const Home = () => {
                                                         }>{e.status}</span>
                                                     </td>
                                                     <td className='actionBtn'>
-                                                        <i onClick={() => showDeleteTaskModal(e._id)} class="bi bi-trash-fill"></i>
-                                                        <i onClick={() => { getEditTaskDetail(e._id); }} class="bi bi-pencil-square"></i>
+                                                        <i onClick={() => showDeleteTaskModal(e._id)} className="bi bi-trash-fill"></i>
+                                                        <i onClick={() => { getEditTaskDetail(e._id); }} className="bi bi-pencil-square"></i>
                                                     </td>
                                                     <td>
                                                         <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
@@ -341,13 +422,26 @@ const Home = () => {
                         </tbody>
                     </table>
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'end' }} className='mt-2'>
+                    {currentPage >= totalPage ?
+                        <button className='mx-1' disabled={true}>Next</button> :
+                        <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
+                    }
+
+                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
+
+                    {currentPage === 1 ?
+                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
+                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
+                    }
+                </div>
             </div>
 
             {/* mobile view */}
-            <div className="container table-container-mobile">
+            <div className="container-fluid table-container-mobile">
                 <div className='d-flex justify-content-between mt-5'>
                     <div className='mycourses-main-heading'>
-                        My Tasks
+                        All Incident
                     </div>
                     <div>
                         <button className='addTask' onClick={handleShow}>+ Add Task</button>
@@ -357,8 +451,14 @@ const Home = () => {
                     <table className="courses-table">
                         <thead>
                             <tr>
+                                <th>UIIN</th>
                                 <th>Title</th>
+                                <th>Dep. Name</th>
+                                <th>Dep. Number</th>
+                                <th>Dep. Email</th>
+                                <th>Assigned To</th>
                                 <th>Description</th>
+                                <th>Remark</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
                                 <th>Priority</th>
@@ -372,12 +472,12 @@ const Home = () => {
                                 myTasks.length === 0 ?
                                     <>
                                         <tr>
-                                            <td colSpan="8" className="image-row">
+                                            <td colSpan="12" className="image-row">
                                                 <img src={Img} className='noData' alt='nodata' />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colSpan="8" className="noDataText">
+                                            <td colSpan="12" className="noDataText">
                                                 No Data Found!
                                             </td>
                                         </tr>
@@ -386,7 +486,12 @@ const Home = () => {
                                     myTasks.map((e) => (
                                         <tr key={e._id}>
                                             <td>{e.title}</td>
+                                            <td>{e.deptName}</td>
+                                            <td>{e.deptNumber}</td>
+                                            <td>{e.deptEmail}</td>
+                                            <td>{e.assignedTo}</td>
                                             <td>{e.descriptions}</td>
+                                            <td>{e.remark}</td>
                                             <td>
                                                 <span>{e.startDate}</span>
                                             </td>
@@ -414,8 +519,8 @@ const Home = () => {
                                                 }>{e.status}</span>
                                             </td>
                                             <td className='actionBtn'>
-                                                <i onClick={() => showDeleteTaskModal(e._id)} class="bi bi-trash-fill"></i>
-                                                <i onClick={() => { getEditTaskDetail(e._id); }} class="bi bi-pencil-square"></i>
+                                                <i onClick={() => showDeleteTaskModal(e._id)} className="bi bi-trash-fill"></i>
+                                                <i onClick={() => { getEditTaskDetail(e._id); }} className="bi bi-pencil-square"></i>
                                             </td>
                                             <td>
                                                 <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
@@ -427,6 +532,19 @@ const Home = () => {
                         </tbody>
                     </table>
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'end' }} className='mt-2'>
+                    {currentPage >= totalPage ?
+                        <button className='mx-1' disabled={true}>Next</button> :
+                        <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
+                    }
+
+                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
+
+                    {currentPage === 1 ?
+                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
+                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
+                    }
+                </div>
             </div>
 
             {/* Add Tasks Model */}
@@ -434,55 +552,128 @@ const Home = () => {
 
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton />
-                    <h3 className='text-center'>Add Task</h3>
+                    <h3 className='text-center'>Add Incident</h3>
                     <Modal.Body>
                         <Form>
-                            <Form.Group className="mb-3 inputBox" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Title</Form.Label>
-                                <Form.Control
-                                    value={task.title}
-                                    onChange={handleChange}
-                                    name='title'
-                                    type="text"
-                                    placeholder="add task..."
-                                    className='form-control mb-3 inputBox'
-                                />
-                            </Form.Group>
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Title*</Form.Label>
+                                    <select value={task.title} name="title" onChange={handleChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        {items.map((name, index) => {
+                                            return (
 
+                                                <option key={index} value={name}>{name}</option>
 
-                            <Form.Label>Start Date</Form.Label>
-                            <input value={task.startDate} onChange={handleChange} name='startDate' type='date' className='form-control mb-3 inputBox' />
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Department Name*</Form.Label>
+                                    <select value={task.deptName} name="deptName" onChange={handleChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        {departmentName.map((name, index) => {
+                                            return (
 
-                            <Form.Label>Due Date</Form.Label>
-                            <input value={task.dueDate} onChange={handleChange} name='dueDate' type='date' className='form-control mb-3 inputBox' />
+                                                <option key={index} value={name}>{name}</option>
 
-                            <Form.Label>Status</Form.Label>
-                            <select value={task.status} name="status" onChange={handleChange} type='text' className="form-select mb-3 inputBox">
-                                <option>Start</option>
-                                <option>Ongoing</option>
-                                <option>Done</option>
-                                <option>On hold</option>
-                            </select>
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
 
-                            <Form.Label>Priority</Form.Label>
-                            <select value={task.priority} name='priority' onChange={handleChange} type='text' className="form-select mb-3 inputBox">
-                                <option>Low</option>
-                                <option>Medium</option>
-                                <option>High</option>
-                            </select>
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Department Email</Form.Label>
+                                    <input value={task.deptEmail} onChange={handleChange} name='deptEmail' type='text' className='form-control mb-3 inputBox startDate' />
+                                </div>
+
+                                <div>
+                                    <Form.Label>Department Number</Form.Label>
+                                    <input value={task.deptNumber} onChange={handleChange} name='deptNumber' type='number' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Assigned To*</Form.Label>
+                                    <select value={task.assignedTo} name="assignedTo" onChange={handleChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        <option>Abhishek Awasthi</option>
+                                        <option>Bhupendra Pal Saxsena</option>
+                                        <option>Neeraj Mehrotra</option>
+                                        <option>Raj</option>
+                                        <option>Sonu</option>
+                                        <option>Mohit Sharma</option>
+                                        <option>Munish Kumar</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Start Date</Form.Label>
+                                    <input value={task.startDate} onChange={handleChange} name='startDate' type='date' className='form-control mb-3 inputBox startDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+
+                                <div>
+                                    <Form.Label>Status*</Form.Label>
+                                    <select value={task.status} name="status" onChange={handleChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        <option>Start</option>
+                                        <option>Ongoing</option>
+                                        <option>Close</option>
+                                        <option>On hold</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Due Date</Form.Label>
+                                    <input value={task.dueDate} onChange={handleChange} name='dueDate' type='date' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <Form.Label>Priority*</Form.Label>
+                                    <select value={task.priority} name='priority' onChange={handleChange} type='text' className="form-select mb-3 inputBox priorityBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Remark</Form.Label>
+                                    <input value={task.remark} onChange={handleChange} name='remark' type='text' className='form-control mb-3 inputBox startDate' />
+                                </div>
+                            </div>
 
                             <Form.Group
                                 className="mb-3 inputBox"
                                 controlId="exampleForm.ControlTextarea1"
                             >
                                 <Form.Label>Description</Form.Label>
-                                <Form.Control value={task.descriptions} name='descriptions' onChange={handleChange} className='inputBox' as="textarea" rows={3} />
+                                <Form.Control value={task.descriptions} name='descriptions' onChange={handleChange} className='descriptionBox' as="textarea" rows={3} />
                             </Form.Group>
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button className='closeBtn' onClick={handleClose}>Close</Button>
-                        <Button className='closeBtn' onClick={addTaskAndClose}>Save Changes</Button>
+                        <Button className='closeBtn'
+                            style={isFieldComplete() ? {} : { backgroundColor: 'lightgrey', color: 'black' }}
+                            onClick={addTaskAndClose} disabled={isFieldComplete() ? false : true}>Save Changes</Button>
                     </Modal.Footer>
                 </Modal>
 
@@ -491,8 +682,13 @@ const Home = () => {
 
                 <Modal show={view} onHide={handleViewClose}>
                     <Modal.Header closeButton />
-                    <h3 className='text-center'>Task Details</h3>
+                    <h3 className='text-center'>Incident Details</h3>
                     <Modal.Body><b>Title :</b> {viewDetail && viewDetail.title}</Modal.Body>
+                    <Modal.Body><b>Department Name :</b> {viewDetail && viewDetail.deptName}</Modal.Body>
+                    <Modal.Body><b>Department Email :</b> {viewDetail && viewDetail.deptEmail}</Modal.Body>
+                    <Modal.Body><b>Department Number :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
+                    <Modal.Body><b>Assigned To :</b> {viewDetail && viewDetail.assignedTo}</Modal.Body>
+                    <Modal.Body><b>Remark :</b> {viewDetail && viewDetail.remark}</Modal.Body>
                     <Modal.Body><b>Description :</b> {viewDetail && viewDetail.descriptions}</Modal.Body>
                     <Modal.Body><b>Start Date :</b> {viewDetail && viewDetail.startDate}</Modal.Body>
                     <Modal.Body><b>End Date :</b> {viewDetail && viewDetail.dueDate}</Modal.Body>
@@ -507,46 +703,111 @@ const Home = () => {
 
                 <Modal show={edit} onHide={handleEditClose}>
                     <Modal.Header closeButton />
-                    <h3 className='text-center'>Edit Task</h3>
+                    <h3 className='text-center'>Edit Incident</h3>
                     <Modal.Body>
                         <Form>
-                            <Form.Label>Title</Form.Label>
-                            <input
-                                value={editDetail.title}
-                                onChange={handleEditChange}
-                                name='title'
-                                type="text"
-                                placeholder="add task..."
-                                className='form-control mb-3 inputBox'
-                            />
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Title</Form.Label>
+                                    <select value={editDetail.title} name="title" onChange={handleEditChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        {items.map((name, index) => {
+                                            return (
 
-                            <Form.Label>Start Date</Form.Label>
-                            <input value={editDetail.startDate} onChange={handleEditChange} name='startDate' type='date' className='form-control mb-3 inputBox' />
+                                                <option key={index} value={name}>{name}</option>
 
-                            <Form.Label>Due Date</Form.Label>
-                            <input value={editDetail.dueDate} onChange={handleEditChange} name='dueDate' type='date' className='form-control mb-3 inputBox' />
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Department Name</Form.Label>
+                                    <select value={editDetail.deptName} name="deptName" onChange={handleChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option hidden>
+                                            select
+                                        </option>
+                                        {departmentName.map((name, index) => {
+                                            return (
+                                                <option key={index} value={name}>{name}</option>
 
-                            <Form.Label>Status</Form.Label>
-                            <select value={editDetail.status} name="status" onChange={handleEditChange} type='text' class="form-select mb-3 inputBox">
-                                <option>Start</option>
-                                <option>Ongoing</option>
-                                <option>Done</option>
-                                <option>On hold</option>
-                            </select>
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
 
-                            <Form.Label>Priority</Form.Label>
-                            <select value={editDetail.priority} name='priority' onChange={handleEditChange} type='text' class="form-select mb-3 inputBox">
-                                <option>Low</option>
-                                <option>Medium</option>
-                                <option>High</option>
-                            </select>
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Department Email</Form.Label>
+                                    <input value={editDetail.deptEmail} onChange={handleEditChange} name='deptEmail' type='text' className='form-control mb-3 inputBox startDate' />
+                                </div>
+
+                                <div>
+                                    <Form.Label>Department Number</Form.Label>
+                                    <input value={editDetail.deptNumber} onChange={handleEditChange} name='deptNumber' type='number' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+
+                                <div>
+                                    <Form.Label>Assigned To</Form.Label>
+                                    <select value={editDetail.assignedTo} name="assignedTo" onChange={handleEditChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option>Abhishek Awasthi</option>
+                                        <option>Bhupendra Pal Saxsena</option>
+                                        <option>Neeraj Mehrotra</option>
+                                        <option>Raj</option>
+                                        <option>Sonu</option>
+                                        <option>Mohit Sharma</option>
+                                        <option>Munish Kumar</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Start Date</Form.Label>
+                                    <input value={editDetail.startDate} onChange={handleEditChange} name='startDate' type='date' className='form-control mb-3 inputBox startDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Status</Form.Label>
+                                    <select value={editDetail.status} name="status" onChange={handleEditChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option>Start</option>
+                                        <option>Ongoing</option>
+                                        <option>Close</option>
+                                        <option>On hold</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <Form.Label>Due Date</Form.Label>
+                                    <input value={editDetail.dueDate} onChange={handleEditChange} name='dueDate' type='date' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <Form.Label>Priority</Form.Label>
+                                    <select value={editDetail.priority} name='priority' onChange={handleEditChange} type='text' className="form-select mb-3 inputBox priorityBox">
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <Form.Label>Remark* </Form.Label>
+                                    <input value={editDetail.remark} onChange={handleEditChange} name='remark' type='text' className='form-control mb-3 inputBox startDate' />
+                                </div>
+                            </div>
 
                             <Form.Group
-                                className="mb-3"
+                                className="mb-3 inputBox"
                                 controlId="exampleForm.ControlTextarea1"
                             >
                                 <Form.Label>Description</Form.Label>
-                                <Form.Control value={editDetail.descriptions} name='descriptions' onChange={handleEditChange} as="textarea" className='inputBox' rows={3} />
+                                <Form.Control value={editDetail.descriptions} name='descriptions' onChange={handleEditChange} className='descriptionBox' as="textarea" rows={3} />
                             </Form.Group>
                         </Form>
                     </Modal.Body>

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import './Assets/Styles/MyTasks.css';
-import { Link, useNavigate } from 'react-router-dom';
+import '../Assets/Styles/MyTasks.css';
+import { Link } from 'react-router-dom';
 import swal from 'sweetalert';
-import Img from './Assets/Media/Images/nodata.png'
-import { url } from './utils/constant';
+import Img from '../Assets/Media/Images/nodata.png'
+import { url } from '../utils/constant';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
-const PublicHome = () => {
+const Dashboard = () => {
     const [myTasks, setMyTasks] = useState([]);
     const [loader, setLoader] = useState(true);
 
@@ -19,11 +19,11 @@ const PublicHome = () => {
 
     const [task, setTask] = useState({
         title: '',
-        descriptions: '',
-        status: 'Start',
-        priority: 'Low',
         startDate: '',
         dueDate: '',
+        status: 'Start',
+        priority: 'Low',
+        descriptions: '',
     })
 
     const handleChange = (e) => {
@@ -33,13 +33,34 @@ const PublicHome = () => {
         })
     }
 
-    const pleaseLoginFirst = () => {
-        swal({
-            title: "Oops",
-            text: `You are not Authorized!`,
-            icon: "error",
-            button: "Ok",
-        });
+    const addTask = async () => {
+        const { title, descriptions, priority, status, startDate, dueDate } = task;
+        // console.log(title, descriptions, priority, status, startDate, dueDate)
+
+        try {
+            const response = await fetch(`${url}/api/v1/user/addTask`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    'token': localStorage.getItem('token'),
+                },
+                body: JSON.stringify({
+                    title: title,
+                    descriptions: descriptions,
+                    priority: priority,
+                    status: status,
+                    startDate: startDate,
+                    dueDate: dueDate,
+                }),
+            });
+
+            const data = await response.json();
+            // console.log(data)
+            fetchMyAllTask();
+
+        } catch (error) {
+            console.error("Error during Add Task:", error);
+        }
     }
 
 
@@ -49,10 +70,10 @@ const PublicHome = () => {
 
     const showDetails = async (id) => {
 
-        const response = await fetch(`${url}/api/v1/public/getTaskDetail/${id}`, {
+        const response = await fetch(`${url}/api/v1/user/getTaskDetail/${id}`, {
             method: "GET",
             headers: {
-                // 'token': localStorage.getItem('token'),
+                'token': localStorage.getItem('token'),
                 'Content-Type': 'application/json',
             }
         })
@@ -65,25 +86,71 @@ const PublicHome = () => {
 
     const fetchMyAllTask = async () => {
         try {
-            const response = await fetch(`${url}/api/v1/public/getTasks`, {
+            const response = await fetch(`${url}/api/v1/user/getTasks`, {
                 method: 'GET',
                 headers: {
-                    // 'token': localStorage.getItem('token'),
+                    'token': localStorage.getItem('token'),
                     'Content-Type': 'application/json',
                 },
             });
             const getResponse = await response.json();
-            console.log(getResponse);
+            // console.log(getResponse.tasks);
 
-            setMyTasks(getResponse.reverseTasks);
+            setMyTasks(getResponse.tasks);
             setLoader(false);
         } catch (e) {
             console.log('Error in verifying token:', e);
         }
     };
 
+
+    const addTaskAndClose = () => {
+        addTask();
+        handleClose();
+    }
+
     // Show a Yes/No dialog on before Delete
 
+    const showDeleteTaskModal = (id) => {
+
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this Task!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                swal("Poof! Your Task has been deleted!", {
+                    icon: "success",
+                });
+                deleteTask(id);
+            } else {
+                swal("Your Task is safe!");
+            }
+        });
+    }
+
+
+    const deleteTask = async (id) => {
+
+        try {
+            const res = await fetch(`${url}/api/v1/user/tasks/delete/${id}`, {
+                method: "GET",
+                headers: {
+                    'token': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            const getRes = await res.json();
+            // console.log(getRes);
+            fetchMyAllTask();
+
+        } catch (error) {
+            console.log("Error while deleting courses", error);
+        }
+    }
 
     // Edit Task
 
@@ -111,26 +178,26 @@ const PublicHome = () => {
         })
     }
 
-    // const getEditTaskDetail = async (id) => {
-    //     showEditModal();
+    const getEditTaskDetail = async (id) => {
+        showEditModal();
 
-    //     try {
-    //         const res = await fetch(`${url}/api/v1/user/tasks/edit/${id}`, {
-    //             method: "GET",
-    //             headers: {
-    //                 'token': localStorage.getItem('token'),
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         })
+        try {
+            const res = await fetch(`${url}/api/v1/user/tasks/edit/${id}`, {
+                method: "GET",
+                headers: {
+                    'token': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            })
 
-    //         const getRes = await res.json();
-    //         // console.log(getRes);
-    //         setEditDetail(getRes.details)
+            const getRes = await res.json();
+            // console.log(getRes);
+            setEditDetail(getRes.details)
 
-    //     } catch (error) {
-    //         console.log("Error while deleting courses", error);
-    //     }
-    // }
+        } catch (error) {
+            console.log("Error while deleting courses", error);
+        }
+    }
 
 
     const updateTaskDetail = async () => {
@@ -152,7 +219,7 @@ const PublicHome = () => {
             });
 
             const data = await response.json();
-            console.log(data)
+            // console.log(data)
             fetchMyAllTask();
 
         } catch (error) {
@@ -165,30 +232,13 @@ const PublicHome = () => {
         handleEditClose();
     }
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (localStorage.getItem("token")) {
-            navigate("/user/home");
-        }
-        fetchMyAllTask();
-    }, []);
-
-
     // search tasks
 
     const [search, setSearch] = useState('');
-    console.log(search);
 
     const searchTask = myTasks.filter((task) => {
-        return (
-            (task.title || '').toLowerCase().includes(search.toLowerCase()) ||
-            (task.descriptions || '').toLowerCase().includes(search.toLowerCase()) ||
-            (task.deptName || '').toLowerCase().includes(search.toLowerCase()) ||
-            (task.assignedTo || '').toLowerCase().includes(search.toLowerCase()) ||
-            (task.priority || '').toLowerCase().includes(search.toLowerCase()) ||
-            (task.status || '').toLowerCase().includes(search.toLowerCase())
-        );
+        return task.title.toLowerCase().includes(search.toLowerCase()) ||
+            task.descriptions.toLowerCase().includes(search.toLowerCase())
     })
 
 
@@ -201,8 +251,14 @@ const PublicHome = () => {
     const totalTask = myTasks.length;
     const totalPage = Math.ceil(totalTask / pageSize);
 
+
+    useEffect(() => {
+        fetchMyAllTask();
+    }, []);
+
     return (
         <>
+
             {/* desktop view */}
             <div className="container table-container-desktop">
                 <div className='d-flex justify-content-between'>
@@ -218,22 +274,19 @@ const PublicHome = () => {
                             <input value={search} onChange={(e) => setSearch(e.target.value)} className='searchBar' placeholder='search...' />
                         </div>
                         <div>
-                            {/* <button className='addTask' onClick={handleShow}>+ Add Task</button> */}
+                            <button className='addTask' onClick={handleShow}>+ Add Task</button>
                         </div>
                     </div>
                 </div>
                 <div className='mycoruse-table-container'>
                     <table className="courses-table">
                         <thead>
-                            <tr>
-                                <th>UIIN</th>
+                            <tr><th>UIIN</th>
                                 <th>Title</th>
                                 <th>Dep. Name</th>
                                 <th>Dep. Number</th>
                                 <th>Dep. Email</th>
-                                <th>Assigned To</th>
                                 <th>Description</th>
-                                <th>Remark</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
                                 <th>Priority</th>
@@ -246,7 +299,7 @@ const PublicHome = () => {
                             {loader ?
                                 <>
                                     <tr>
-                                        <td colSpan='12'>
+                                        <td colSpan='8'>
                                             <div className='circle'>
                                                 <div className="spinner-border">
                                                 </div>
@@ -276,12 +329,10 @@ const PublicHome = () => {
                                                 <tr key={e._id}>
                                                     <td>UN0{index + 1}</td>
                                                     <td>{e.title}</td>
-                                                    <td>{e.deptName}</td>
-                                                    <td>{e.deptNumber}</td>
-                                                    <td>{e.deptEmail}</td>
-                                                    <td>{e.assignedTo}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
                                                     <td>{e.descriptions}</td>
-                                                    <td>{e.remark}</td>
                                                     <td>
                                                         <span>{e.startDate}</span>
                                                     </td>
@@ -309,13 +360,11 @@ const PublicHome = () => {
                                                         }>{e.status}</span>
                                                     </td>
                                                     <td className='actionBtn'>
-                                                        <i onClick={pleaseLoginFirst} className="bi bi-trash-fill"></i>
-                                                        <i onClick={pleaseLoginFirst} className="bi bi-pencil-square"></i>
+                                                        <i onClick={() => showDeleteTaskModal(e._id)} className="bi bi-trash-fill"></i>
+                                                        <i onClick={() => { getEditTaskDetail(e._id); }} className="bi bi-pencil-square"></i>
                                                     </td>
                                                     <td>
-                                                        <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>
-                                                            <i className="bi bi-eye-fill"></i>
-                                                        </button>
+                                                        <button onClick={() => showDetails(e._id)} classNameName='viewDetailsOnMyCourse'>View Details</button>
                                                     </td>
                                                 </tr>
                                             ))
@@ -329,15 +378,16 @@ const PublicHome = () => {
                     </table>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'end' }} className='mt-2'>
-                     <span className='mx-2 mt-2'> Total complaint: <b>{totalTask}</b></span>
-                    {currentPage === 1 ?
-                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
-                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
-                    }
-                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
                     {currentPage >= totalPage ?
                         <button className='mx-1' disabled={true}>Next</button> :
                         <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
+                    }
+
+                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
+
+                    {currentPage === 1 ?
+                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
+                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
                     }
                 </div>
             </div>
@@ -346,24 +396,18 @@ const PublicHome = () => {
             <div className="container table-container-mobile">
                 <div className='d-flex justify-content-between mt-5'>
                     <div className='mycourses-main-heading'>
-                        My Tasks
+                        All Incident
                     </div>
                     <div>
-                        <button className='addTask' onClick={pleaseLoginFirst}>+ Add Task</button>
+                        <button className='addTask' onClick={handleShow}>+ Add Task</button>
                     </div>
                 </div>
                 <div className='mycoruse-table-container'>
                     <table className="courses-table">
                         <thead>
                             <tr>
-                                <th>UIIN</th>
                                 <th>Title</th>
-                                <th>Dep. Name</th>
-                                <th>Dep. Number</th>
-                                <th>Dep. Email</th>
-                                <th>Assigned To</th>
                                 <th>Description</th>
-                                <th>Remark</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
                                 <th>Priority</th>
@@ -374,30 +418,24 @@ const PublicHome = () => {
                         </thead>
                         <tbody className='table-body'>
                             {
-                                paginatedTask.length === 0 ?
+                                myTasks.length === 0 ?
                                     <>
                                         <tr>
-                                            <td colSpan="12" className="image-row">
+                                            <td colSpan="8" className="image-row">
                                                 <img src={Img} className='noData' alt='nodata' />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colSpan="12" className="noDataText">
+                                            <td colSpan="8" className="noDataText">
                                                 No Data Found!
                                             </td>
                                         </tr>
                                     </>
                                     :
-                                    paginatedTask.map((e, index) => (
+                                    myTasks.map((e) => (
                                         <tr key={e._id}>
-                                            <td>UN0{index + 1}</td>
                                             <td>{e.title}</td>
-                                            <td>{e.deptName}</td>
-                                            <td>{e.deptNumber}</td>
-                                            <td>{e.deptEmail}</td>
-                                            <td>{e.assignedTo}</td>
                                             <td>{e.descriptions}</td>
-                                            <td>{e.remark}</td>
                                             <td>
                                                 <span>{e.startDate}</span>
                                             </td>
@@ -425,8 +463,8 @@ const PublicHome = () => {
                                                 }>{e.status}</span>
                                             </td>
                                             <td className='actionBtn'>
-                                                <i onClick={pleaseLoginFirst} className="bi bi-trash-fill"></i>
-                                                <i onClick={pleaseLoginFirst} className="bi bi-pencil-square"></i>
+                                                <i onClick={() => showDeleteTaskModal(e._id)} class="bi bi-trash-fill"></i>
+                                                <i onClick={() => { getEditTaskDetail(e._id); }} class="bi bi-pencil-square"></i>
                                             </td>
                                             <td>
                                                 <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
@@ -438,17 +476,6 @@ const PublicHome = () => {
                         </tbody>
                     </table>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'end' }} className='mt-2'>
-                    {currentPage === 1 ?
-                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
-                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
-                    }
-                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
-                    {currentPage >= totalPage ?
-                        <button className='mx-1' disabled={true}>Next</button> :
-                        <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
-                    }
-                </div>
             </div>
 
             {/* Add Tasks Model */}
@@ -456,7 +483,7 @@ const PublicHome = () => {
 
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton />
-                    <h3 className='text-center'>Add Task</h3>
+                    <h3 className='text-center'>Add Incident</h3>
                     <Modal.Body>
                         <Form>
                             <Form.Group className="mb-3 inputBox" controlId="exampleForm.ControlInput1">
@@ -471,40 +498,75 @@ const PublicHome = () => {
                                 />
                             </Form.Group>
 
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Department Name</Form.Label>
+                                    <input value={task.deptName} onChange={handleChange} name='deptName' type='text' className='form-control mb-3 inputBox startDate' />
+                                </div>
 
-                            <Form.Label>Start Date</Form.Label>
-                            <input value={task.startDate} onChange={handleChange} name='startDate' type='date' className='form-control mb-3 inputBox' />
+                                <div>
+                                    <Form.Label>Department Number</Form.Label>
+                                    <input value={task.deptNumber} onChange={handleChange} name='deptNumber' type='number' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
 
-                            <Form.Label>Due Date</Form.Label>
-                            <input value={task.dueDate} onChange={handleChange} name='dueDate' type='date' className='form-control mb-3 inputBox' />
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Department Name</Form.Label>
+                                    <input value={task.deptName} onChange={handleChange} name='deptName' type='text' className='form-control mb-3 inputBox startDate' />
+                                </div>
 
-                            <Form.Label>Status</Form.Label>
-                            <select value={task.status} name="status" onChange={handleChange} type='text' className="form-select mb-3 inputBox">
-                                <option>Start</option>
-                                <option>Ongoing</option>
-                                <option>Done</option>
-                                <option>On hold</option>
-                            </select>
+                                <div>
+                                    <Form.Label>Department Number</Form.Label>
+                                    <input value={task.deptNumber} onChange={handleChange} name='deptNumber' type='number' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
 
-                            <Form.Label>Priority</Form.Label>
-                            <select value={task.priority} name='priority' onChange={handleChange} type='text' className="form-select mb-3 inputBox">
-                                <option>Low</option>
-                                <option>Medium</option>
-                                <option>High</option>
-                            </select>
+                            <div style={{ display: 'flex', justifyContent: "space-between" }}>
+                                <div>
+                                    <Form.Label>Start Date</Form.Label>
+                                    <input value={task.startDate} onChange={handleChange} name='startDate' type='date' className='form-control mb-3 inputBox startDate' />
+                                </div>
+
+                                <div>
+                                    <Form.Label>Due Date</Form.Label>
+                                    <input value={task.dueDate} onChange={handleChange} name='dueDate' type='date' className='form-control mb-3 inputBox dueDate' />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <Form.Label>Status</Form.Label>
+                                    <select value={task.status} name="status" onChange={handleChange} type='text' className="form-select mb-3 inputBox statusBox">
+                                        <option>Start</option>
+                                        <option>Ongoing</option>
+                                        <option>Done</option>
+                                        <option>On hold</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <Form.Label>Priority</Form.Label>
+                                    <select value={task.priority} name='priority' onChange={handleChange} type='text' className="form-select mb-3 inputBox priorityBox">
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <Form.Group
                                 className="mb-3 inputBox"
                                 controlId="exampleForm.ControlTextarea1"
                             >
                                 <Form.Label>Description</Form.Label>
-                                <Form.Control value={task.descriptions} name='descriptions' onChange={handleChange} className='inputBox' as="textarea" rows={3} />
+                                <Form.Control value={task.descriptions} name='descriptions' onChange={handleChange} className='descriptionBox' as="textarea" rows={3} />
                             </Form.Group>
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button className='closeBtn' onClick={handleClose}>Close</Button>
-                        <Button className='closeBtn' onClick={pleaseLoginFirst}>Save Changes</Button>
+                        <Button className='closeBtn' onClick={addTaskAndClose}>Save Changes</Button>
                     </Modal.Footer>
                 </Modal>
 
@@ -513,13 +575,8 @@ const PublicHome = () => {
 
                 <Modal show={view} onHide={handleViewClose}>
                     <Modal.Header closeButton />
-                    <h3 className='text-center'>Task Details</h3>
+                    <h3 className='text-center'>Incident Details</h3>
                     <Modal.Body><b>Title :</b> {viewDetail && viewDetail.title}</Modal.Body>
-                    <Modal.Body><b>Department Name :</b> {viewDetail && viewDetail.deptName}</Modal.Body>
-                    <Modal.Body><b>Department Email :</b> {viewDetail && viewDetail.deptEmail}</Modal.Body>
-                    <Modal.Body><b>Department Number :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
-                    <Modal.Body><b>Assigned To :</b> {viewDetail && viewDetail.assignedTo}</Modal.Body>
-                    <Modal.Body><b>Remark :</b> {viewDetail && viewDetail.remark}</Modal.Body>
                     <Modal.Body><b>Description :</b> {viewDetail && viewDetail.descriptions}</Modal.Body>
                     <Modal.Body><b>Start Date :</b> {viewDetail && viewDetail.startDate}</Modal.Body>
                     <Modal.Body><b>End Date :</b> {viewDetail && viewDetail.dueDate}</Modal.Body>
@@ -534,7 +591,7 @@ const PublicHome = () => {
 
                 <Modal show={edit} onHide={handleEditClose}>
                     <Modal.Header closeButton />
-                    <h3 className='text-center'>Edit Task</h3>
+                    <h3 className='text-center'>Edit Incident</h3>
                     <Modal.Body>
                         <Form>
                             <Form.Label>Title</Form.Label>
@@ -554,7 +611,7 @@ const PublicHome = () => {
                             <input value={editDetail.dueDate} onChange={handleEditChange} name='dueDate' type='date' className='form-control mb-3 inputBox' />
 
                             <Form.Label>Status</Form.Label>
-                            <select value={editDetail.status} name="status" onChange={handleEditChange} type='text' class="form-select mb-3 inputBox">
+                            <select value={editDetail.status} name="status" onChange={handleEditChange} type='text' className="form-select mb-3 inputBox">
                                 <option>Start</option>
                                 <option>Ongoing</option>
                                 <option>Done</option>
@@ -562,7 +619,7 @@ const PublicHome = () => {
                             </select>
 
                             <Form.Label>Priority</Form.Label>
-                            <select value={editDetail.priority} name='priority' onChange={handleEditChange} type='text' class="form-select mb-3 inputBox">
+                            <select value={editDetail.priority} name='priority' onChange={handleEditChange} type='text' className="form-select mb-3 inputBox">
                                 <option>Low</option>
                                 <option>Medium</option>
                                 <option>High</option>
@@ -587,6 +644,6 @@ const PublicHome = () => {
     );
 }
 
-export default PublicHome;
+export default Dashboard;
 
 
