@@ -7,6 +7,7 @@ import Layout from "./component/Layout/layout";
 import ProfileEdit from "./component/Auth/ProfileEdit";
 import PublicHome from "./component/publicHome";
 import PublicLayout from "./component/Layout/publicLayout";
+import Dashboard from "./component/admin/dashboard";
 
 function App() {
   return (
@@ -35,6 +36,11 @@ function App() {
 
           <Route path="/" element={<PublicLayout />}>
             <Route exact index element={<PublicHome />}></Route>
+          </Route>
+
+
+          <Route path="/dashboard" element={<Layout />}>
+            <Route index element={<Dashboard />} />
           </Route>
 
         </Routes>

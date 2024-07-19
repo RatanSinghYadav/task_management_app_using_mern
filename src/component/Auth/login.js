@@ -57,15 +57,19 @@ const Login = () => {
         });
 
         const data = await response.json();
-        //   console.log(data.token)
+          console.log(data.userlogin.role);
         //   console.log(data.userlogin._id)
-        localStorage.setItem('userId', data.userlogin._id)
-        localStorage.setItem('token', data.token)
-
-        if (response.ok) {
+        localStorage.setItem('role', data.userlogin.role);
+        localStorage.setItem('userId', data.userlogin._id);
+        localStorage.setItem('token', data.token);
+        
+        if(data.userlogin.role === 'admin'){
+           navigate('/dashboard'); 
+        }else{
           console.log("Login Status:", data.message);
           navigate("/user/home");
         }
+        
       } catch (error) {
         console.error("Error during login:", error);
       } finally {
@@ -141,7 +145,7 @@ const Login = () => {
 
           {loader ?
             <div className='circle' style={{marginTop:'2.3rem'}}>
-              <div class="spinner-border"></div>
+              <div className="spinner-border"></div>
               <strong>Loading...</strong>
             </div>
             :
