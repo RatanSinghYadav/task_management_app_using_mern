@@ -687,7 +687,9 @@ const Home = () => {
                     <Modal.Body><b>Title :</b> {viewDetail && viewDetail.title}</Modal.Body>
                     <Modal.Body><b>Department Name :</b> {viewDetail && viewDetail.deptName}</Modal.Body>
                     <Modal.Body><b>Department Email :</b> {viewDetail && viewDetail.deptEmail}</Modal.Body>
+
                     <Modal.Body><b>Complaint From :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
+
                     <Modal.Body><b>Assigned To :</b> {viewDetail && viewDetail.assignedTo}</Modal.Body>
                     <Modal.Body><b>Remark :</b> {viewDetail && viewDetail.remark}</Modal.Body>
                     <Modal.Body><b>Description :</b> {viewDetail && viewDetail.descriptions}</Modal.Body>
@@ -746,6 +748,7 @@ const Home = () => {
                                 </div>
 
                                 <div>
+
                                     <Form.Label>Complaint From</Form.Label>
                                     <input value={editDetail.deptNumber} onChange={handleEditChange} name='deptNumber' type='text' className='form-control mb-3 inputBox dueDate' />
                                 </div>
