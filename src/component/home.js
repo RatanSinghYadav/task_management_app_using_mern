@@ -370,7 +370,7 @@ const Home = () => {
                                             :
                                             paginatedTask.reverse().map((e, index) => (
                                                 <tr key={e._id}>
-                                                    <td>UN00000{((currentPage - 1) * 10) + (index + 1)}</td>
+                                                    <td>UN0000{((currentPage - 1) * 10) + (index + 1)}</td>
                                                     <td>{e.title}</td>
                                                     <td>{e.deptName}</td>
                                                     <td>{e.deptNumber}</td>
