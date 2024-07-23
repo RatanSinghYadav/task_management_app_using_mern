@@ -370,7 +370,7 @@ const Home = () => {
                                             :
                                             paginatedTask.reverse().map((e, index) => (
                                                 <tr key={e._id}>
-                                                    <td>UN0{index + 1}</td>
+                                                    <td>UN00000{((currentPage - 1) * 10) + (index + 1)}</td>
                                                     <td>{e.title}</td>
                                                     <td>{e.deptName}</td>
                                                     <td>{e.deptNumber}</td>
@@ -595,8 +595,8 @@ const Home = () => {
                                 </div>
 
                                 <div>
-                                    <Form.Label>Department Number</Form.Label>
-                                    <input value={task.deptNumber} onChange={handleChange} name='deptNumber' type='number' className='form-control mb-3 inputBox dueDate' />
+                                    <Form.Label>Complaint From</Form.Label>
+                                    <input value={task.deptNumber} onChange={handleChange} name='deptNumber' type='text' className='form-control mb-3 inputBox dueDate' />
                                 </div>
                             </div>
 
@@ -607,6 +607,7 @@ const Home = () => {
                                         <option hidden>
                                             select
                                         </option>
+                                        <option>Rakesh Agarwal</option>
                                         <option>Abhishek Awasthi</option>
                                         <option>Bhupendra Pal Saxsena</option>
                                         <option>Neeraj Mehrotra</option>
@@ -686,7 +687,7 @@ const Home = () => {
                     <Modal.Body><b>Title :</b> {viewDetail && viewDetail.title}</Modal.Body>
                     <Modal.Body><b>Department Name :</b> {viewDetail && viewDetail.deptName}</Modal.Body>
                     <Modal.Body><b>Department Email :</b> {viewDetail && viewDetail.deptEmail}</Modal.Body>
-                    <Modal.Body><b>Department Number :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
+                    <Modal.Body><b>Complaint From :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
                     <Modal.Body><b>Assigned To :</b> {viewDetail && viewDetail.assignedTo}</Modal.Body>
                     <Modal.Body><b>Remark :</b> {viewDetail && viewDetail.remark}</Modal.Body>
                     <Modal.Body><b>Description :</b> {viewDetail && viewDetail.descriptions}</Modal.Body>
@@ -745,8 +746,8 @@ const Home = () => {
                                 </div>
 
                                 <div>
-                                    <Form.Label>Department Number</Form.Label>
-                                    <input value={editDetail.deptNumber} onChange={handleEditChange} name='deptNumber' type='number' className='form-control mb-3 inputBox dueDate' />
+                                    <Form.Label>Complaint From</Form.Label>
+                                    <input value={editDetail.deptNumber} onChange={handleEditChange} name='deptNumber' type='text' className='form-control mb-3 inputBox dueDate' />
                                 </div>
                             </div>
 
