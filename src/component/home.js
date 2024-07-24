@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
-let departmentName = ['IT', 'Electrical', 'Security', 'Safety', 'HR', 'Sales', 'Store', 'Quality', 'Logistics', 'Accounts', 'Management', 'Purchase', 'Marketing', 'Civil', 'Maintenance'];
+let departmentName = ['IT', "Audit", "Preform", 'Electrical', 'Security', 'Safety', 'HR', 'Sales', 'Store', 'Quality', 'Logistics', 'Accounts', 'Management', 'Purchase', 'Marketing', 'Civil', 'Maintenance', "Others"];
 const items = ["Laptop", "Desktop", "Printer", "Scanner", "Networking", "D-365 ERP", "Software/Application", "UPS", "CCTV", "Other Issue"];
 
 
@@ -118,7 +118,7 @@ const Home = () => {
                 },
             });
             const getResponse = await response.json();
-            // console.log(getResponse);
+            console.log(getResponse);
 
             setMyTasks(getResponse.tasks);
             setLoader(false);
@@ -325,7 +325,7 @@ const Home = () => {
                                 <th>UIIN</th>
                                 <th>Title</th>
                                 <th>Dep. Name</th>
-                                <th>Dep. Number</th>
+                                <th>Complaint From</th>
                                 <th>Dep. Email</th>
                                 <th>Assigned To</th>
                                 <th>Description</th>
@@ -368,7 +368,7 @@ const Home = () => {
                                                 </tr>
                                             </>
                                             :
-                                            paginatedTask.reverse().map((e, index) => (
+                                            paginatedTask.map((e, index) => (
                                                 <tr key={e._id}>
                                                     <td>UN0000{((currentPage - 1) * 10) + (index + 1)}</td>
                                                     <td>{e.title}</td>
@@ -385,13 +385,24 @@ const Home = () => {
                                                         <span>{e.dueDate}</span>
                                                     </td>
                                                     <td>
-                                                        <span className={
-                                                            `${e.priority === 'Low' ?
-                                                                'Low' :
-                                                                e.priority === 'Medium' ?
-                                                                    'Medium' : 'High'
-                                                            }`
-                                                        }>{e.priority}</span>
+                                                        {e.status === 'Cancel' ?
+                                                            <span className={
+                                                                `${e.priority === 'Low' ?
+                                                                    'Low' :
+                                                                    e.priority === 'Medium' ?
+                                                                        'Medium' : 'High'
+                                                                }`
+                                                            } style={{ pointerEvents: 'none', opacity: 0.5, backgroundColor: 'grey', color: 'black' }}>{e.priority}</span>
+                                                            :
+                                                            <span className={
+                                                                `${e.priority === 'Low' ?
+                                                                    'Low' :
+                                                                    e.priority === 'Medium' ?
+                                                                        'Medium' : 'High'
+                                                                }`
+                                                            }>{e.priority}</span>
+                                                        }
+
                                                     </td>
                                                     <td>
                                                         <span className={
@@ -400,13 +411,19 @@ const Home = () => {
                                                                 e.status === 'Ongoing' ?
                                                                     'Ongoing' :
                                                                     e.status === 'Done' ?
-                                                                        'Done' : 'onHold'
+                                                                        'Done' :
+                                                                        e.status === 'Cancel' ?
+                                                                            'Cancel' : 'onHold'
                                                             }`
                                                         }>{e.status}</span>
                                                     </td>
+                                                    {/* <i onClick={() => showDeleteTaskModal(e._id)} className="bi bi-trash-fill"></i> */}
                                                     <td className='actionBtn'>
-                                                        <i onClick={() => showDeleteTaskModal(e._id)} className="bi bi-trash-fill"></i>
-                                                        <i onClick={() => { getEditTaskDetail(e._id); }} className="bi bi-pencil-square"></i>
+                                                        {e.status === "Cancel" ?
+                                                            <i onClick={() => { getEditTaskDetail(e._id); }} className="bi bi-pencil-square disabled"
+                                                                style={{ pointerEvents: 'none', opacity: 0.5, color: 'black' }}></i> :
+                                                            <i onClick={() => { getEditTaskDetail(e._id); }} className="bi bi-pencil-square"></i>
+                                                        }
                                                     </td>
                                                     <td>
                                                         <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
@@ -423,16 +440,23 @@ const Home = () => {
                     </table>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'end' }} className='mt-2'>
+                    <span className='mx-1 mt-2'> Total complaint: <b>{totalTask}</b></span>
+                    {currentPage === 1 ?
+                        <button className='mx-1' disabled={true}>First</button> :
+                        <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage(1)}>First</button>
+                    }
+                    {currentPage === 1 ?
+                        <button className='mx-1' disabled={true}>Back</button> :
+                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
+                    }
+                    <span className='viewDetailsOnMyCourse mx-1'>{currentPage}</span>
                     {currentPage >= totalPage ?
                         <button className='mx-1' disabled={true}>Next</button> :
                         <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
                     }
-
-                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
-
-                    {currentPage === 1 ?
-                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
-                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
+                    {currentPage === totalPage?
+                        <button className='mx-1' disabled={true}>Last</button> :
+                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage(totalPage)}>Last</button>
                     }
                 </div>
             </div>
@@ -514,7 +538,9 @@ const Home = () => {
                                                         e.status === 'Ongoing' ?
                                                             'Ongoing' :
                                                             e.status === 'Done' ?
-                                                                'Done' : 'onHold'
+                                                                'Done' :
+                                                                e.status === 'Cancel' ?
+                                                                    'Cancel' : 'onHold'
                                                     }`
                                                 }>{e.status}</span>
                                             </td>
@@ -782,6 +808,7 @@ const Home = () => {
                                         <option>Ongoing</option>
                                         <option>Close</option>
                                         <option>On hold</option>
+                                        <option>Cancel</option>
                                     </select>
                                 </div>
 

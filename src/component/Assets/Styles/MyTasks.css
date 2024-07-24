@@ -80,6 +80,13 @@
     font-weight: 500;
 }
 
+.Cancel {
+    background-color: red;
+    border-radius: 6px;
+    padding: 3px 10px 5px 10px;
+    color: white;
+    font-weight: 500;
+}
 /* end */
 
 /* priority */
@@ -93,10 +100,10 @@
 }
 
 .Medium {
-    background-color: #FBCF6740;
+    background-color: #FBA33C;
     border-radius: 6px;
     padding: 3px 10px 5px 10px;
-    color: #FBA33C;
+    color: #000000;
     font-weight: 500;
 }
 
@@ -167,8 +174,8 @@ table thead tr th {
 
 .courses-table th,
 .courses-table td {
-    padding: 10px;
-    text-align: center;
+    padding: 5px 5px 5px 5px;
+    text-align: start;
 }
 
 table thead {
@@ -286,8 +293,11 @@ body::-webkit-scrollbar {
 
 td {
     font-size: 11px;
+    border: 1px solid #eeefee;
 }
 
 th {
     font-size: 12px;
+    border-top: none;
+    border-left: 1px solid #eeefee;
 }

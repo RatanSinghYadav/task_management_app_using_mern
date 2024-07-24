@@ -67,7 +67,7 @@ const Nav = () => {
   const userLogout = () => {
     if (localStorage.getItem('token')) {
       localStorage.clear();
-      navigate('/login');
+      navigate('/');
     }
   }
 
