@@ -73,9 +73,9 @@ const PublicHome = () => {
                 },
             });
             const getResponse = await response.json();
-            console.log(getResponse);
+            // console.log(getResponse);
 
-            setMyTasks(getResponse.reverseTasks);
+            setMyTasks(getResponse.tasks);
             setLoader(false);
         } catch (e) {
             console.log('Error in verifying token:', e);
@@ -178,9 +178,8 @@ const PublicHome = () => {
     // search tasks
 
     const [search, setSearch] = useState('');
-    console.log(search);
 
-    const searchTask = myTasks.filter((task) => {
+    const searchTask = myTasks?.filter((task) => {
         return (
             (task.title || '').toLowerCase().includes(search.toLowerCase()) ||
             (task.descriptions || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -196,9 +195,9 @@ const PublicHome = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
-    const paginatedTask = searchTask.slice((currentPage - 1) * pageSize, (currentPage * pageSize));
+    const paginatedTask = searchTask?.slice((currentPage - 1) * pageSize, (currentPage * pageSize));
 
-    const totalTask = myTasks.length;
+    const totalTask = myTasks?.length;
     const totalPage = Math.ceil(totalTask / pageSize);
 
     return (
@@ -229,7 +228,7 @@ const PublicHome = () => {
                                 <th>UIIN</th>
                                 <th>Title</th>
                                 <th>Dep. Name</th>
-                                <th>Dep. Number</th>
+                                <th>Complaint From</th>
                                 <th>Dep. Email</th>
                                 <th>Assigned To</th>
                                 <th>Description</th>
@@ -238,7 +237,7 @@ const PublicHome = () => {
                                 <th>Due Date</th>
                                 <th>Priority</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                {/* <th>Action</th> */}
                                 <th>Details</th>
                             </tr>
                         </thead>
@@ -246,7 +245,7 @@ const PublicHome = () => {
                             {loader ?
                                 <>
                                     <tr>
-                                        <td colSpan='12'>
+                                        <td colSpan='14'>
                                             <div className='circle'>
                                                 <div className="spinner-border">
                                                 </div>
@@ -258,7 +257,7 @@ const PublicHome = () => {
                                 :
                                 <>
                                     {
-                                        paginatedTask.length === 0 ?
+                                        paginatedTask?.length === 0 ?
                                             <>
                                                 <tr>
                                                     <td colSpan="12" className="image-row">
@@ -272,9 +271,9 @@ const PublicHome = () => {
                                                 </tr>
                                             </>
                                             :
-                                            paginatedTask.map((e, index) => (
+                                            paginatedTask?.map((e, index) => (
                                                 <tr key={e._id}>
-                                                    <td>UN0{index + 1}</td>
+                                                    <td>UN0000{((currentPage - 1) * 10) + (index + 1)}</td>
                                                     <td>{e.title}</td>
                                                     <td>{e.deptName}</td>
                                                     <td>{e.deptNumber}</td>
@@ -289,13 +288,24 @@ const PublicHome = () => {
                                                         <span>{e.dueDate}</span>
                                                     </td>
                                                     <td>
-                                                        <span className={
-                                                            `${e.priority === 'Low' ?
-                                                                'Low' :
-                                                                e.priority === 'Medium' ?
-                                                                    'Medium' : 'High'
-                                                            }`
-                                                        }>{e.priority}</span>
+                                                        {e.status === 'Cancel' ?
+                                                            <span className={
+                                                                `${e.priority === 'Low' ?
+                                                                    'Low' :
+                                                                    e.priority === 'Medium' ?
+                                                                        'Medium' : 'High'
+                                                                }`
+                                                            } style={{ pointerEvents: 'none', opacity: 0.5, backgroundColor: 'grey', color: 'black' }}>{e.priority}</span>
+                                                            :
+                                                            <span className={
+                                                                `${e.priority === 'Low' ?
+                                                                    'Low' :
+                                                                    e.priority === 'Medium' ?
+                                                                        'Medium' : 'High'
+                                                                }`
+                                                            }>{e.priority}</span>
+                                                        }
+
                                                     </td>
                                                     <td>
                                                         <span className={
@@ -304,18 +314,22 @@ const PublicHome = () => {
                                                                 e.status === 'Ongoing' ?
                                                                     'Ongoing' :
                                                                     e.status === 'Done' ?
-                                                                        'Done' : 'onHold'
+                                                                        'Done' :
+                                                                        e.status === 'Cancel' ?
+                                                                            'Cancel' : 'onHold'
                                                             }`
                                                         }>{e.status}</span>
                                                     </td>
-                                                    <td className='actionBtn'>
-                                                        <i onClick={pleaseLoginFirst} className="bi bi-trash-fill"></i>
-                                                        <i onClick={pleaseLoginFirst} className="bi bi-pencil-square"></i>
-                                                    </td>
+                                                    {/* <i onClick={() => pleaseLoginFirst(e._id)} className="bi bi-trash-fill"></i> */}
+                                                    {/* <td className='actionBtn'>
+                                                        {e.status === "Cancel" ?
+                                                            <i className="bi bi-pencil-square disabled"
+                                                                style={{ pointerEvents: 'none', opacity: 0.5, color: 'black' }}></i> :
+                                                            <i onClick={() => pleaseLoginFirst(e._id)} className="bi bi-pencil-square"></i>
+                                                        }
+                                                    </td> */}
                                                     <td>
-                                                        <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>
-                                                            <i className="bi bi-eye-fill"></i>
-                                                        </button>
+                                                        <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
                                                     </td>
                                                 </tr>
                                             ))
@@ -329,15 +343,23 @@ const PublicHome = () => {
                     </table>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'end' }} className='mt-2'>
-                     <span className='mx-2 mt-2'> Total complaint: <b>{totalTask}</b></span>
+                    <span className='mx-1 mt-2'> Total complaint: <b>{totalTask}</b></span>
                     {currentPage === 1 ?
-                        <button className={currentPage === 1 ? '' : 'viewDetailsOnMyCourse'} disabled={true}>Back</button> :
+                        <button className='mx-1' disabled={true}>First</button> :
+                        <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage(1)}>First</button>
+                    }
+                    {currentPage === 1 ?
+                        <button className='mx-1' disabled={true}>Back</button> :
                         <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage((prevState) => prevState - 1)}>Back</button>
                     }
-                    <span className='viewDetailsOnMyCourse mx-2'>{currentPage}</span>
+                    <span className='viewDetailsOnMyCourse mx-1'>{currentPage}</span>
                     {currentPage >= totalPage ?
                         <button className='mx-1' disabled={true}>Next</button> :
                         <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
+                    }
+                    {currentPage === totalPage?
+                        <button className='mx-1' disabled={true}>Last</button> :
+                        <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage(totalPage)}>Last</button>
                     }
                 </div>
             </div>
@@ -374,7 +396,7 @@ const PublicHome = () => {
                         </thead>
                         <tbody className='table-body'>
                             {
-                                paginatedTask.length === 0 ?
+                                paginatedTask?.length === 0 ?
                                     <>
                                         <tr>
                                             <td colSpan="12" className="image-row">
@@ -388,7 +410,7 @@ const PublicHome = () => {
                                         </tr>
                                     </>
                                     :
-                                    paginatedTask.map((e, index) => (
+                                    paginatedTask?.map((e, index) => (
                                         <tr key={e._id}>
                                             <td>UN0{index + 1}</td>
                                             <td>{e.title}</td>
@@ -425,7 +447,7 @@ const PublicHome = () => {
                                                 }>{e.status}</span>
                                             </td>
                                             <td className='actionBtn'>
-                                                <i onClick={pleaseLoginFirst} className="bi bi-trash-fill"></i>
+                                                {/* <i onClick={pleaseLoginFirst} className="bi bi-trash-fill"></i> */}
                                                 <i onClick={pleaseLoginFirst} className="bi bi-pencil-square"></i>
                                             </td>
                                             <td>
