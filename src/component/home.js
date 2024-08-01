@@ -8,6 +8,7 @@ import { url } from './utils/constant';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import TaskDetailModal from './detailModel';
 
 let departmentName = ['IT', "Audit", "Preform", 'Electrical', 'Security', 'Safety', 'HR', 'Sales', 'Store', 'Quality', 'Logistics', 'Accounts', 'Management', 'Purchase', 'Marketing', 'Civil', 'Maintenance', "Others"];
 const items = ["Laptop", "Desktop", "Printer", "Scanner", "Networking", "D-365 ERP", "Software/Application", "UPS", "CCTV", "Other Issue"];
@@ -35,6 +36,18 @@ const Home = () => {
         remark: '',
         descriptions: '',
     })
+
+    const [date, setDate] = useState({
+        startDate: '',
+        endDate: ''
+    });
+
+    const dateHandleChange = (e) => {
+        const { name, value } = e.target;
+        setDate((newData) => {
+            return ({ ...newData, [name]: value })
+        })
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -108,9 +121,20 @@ const Home = () => {
         setview(true)
     }
 
+    function convertDate(newDate) {
+        if (!newDate) {
+            return
+        }
+        const parts = newDate.split('-');
+        const newDateFormate = parts[2] + '-' + parts[1] + '-' + parts[0];
+        // console.log(newDateFormate);
+        return newDateFormate;
+    }
+
     const fetchMyAllTask = async () => {
+        const { startDate, endDate } = date;
         try {
-            const response = await fetch(`${url}/api/v1/user/getTasks`, {
+            const response = await fetch(`${url}/api/v1/user/getTasks?startDate=${startDate}&endDate=${endDate}`, {
                 method: 'GET',
                 headers: {
                     'token': localStorage.getItem('token'),
@@ -306,8 +330,14 @@ const Home = () => {
                         All Incident
                     </div>
                     <div className='d-flex gap-2'>
+                        <div className='d-flex gap-2'>
+                            <input type='date' value={date.startDate} name='startDate' onChange={dateHandleChange} className='searchBar ' />
+                            <input type='date' value={date.endDate} name='endDate' onChange={dateHandleChange} className='searchBar ' />
+                        </div>
                         <div>
-                            <i className="bi bi-funnel" style={{ fontSize: '1.4rem' }}></i>
+                            <button onClick={fetchMyAllTask} className='viewDetailsOnMyCourse' style={{ paddingTop: '2px', paddingBottom: '2px' }} >
+                                <i className="bi bi-funnel" style={{ fontSize: '1rem' }}></i>
+                            </button>
                         </div>
                         <div>
                             <i className="bi bi-search mx-1"></i>
@@ -323,17 +353,31 @@ const Home = () => {
                         <thead>
                             <tr>
                                 <th>UIIN</th>
-                                <th>Title</th>
-                                <th>Dep. Name</th>
-                                <th>Complaint From</th>
-                                <th>Dep. Email</th>
-                                <th>Assigned To</th>
+                                <th>Title
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
+                                <th>Dep. Name
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
+                                <th>Complaint From
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
+                                <th>Dep. Email
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
+                                <th>Assigned To
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
                                 <th>Description</th>
                                 <th>Remark</th>
                                 <th>Start Date</th>
                                 <th>Due Date</th>
-                                <th>Priority</th>
-                                <th>Status</th>
+                                <th>Priority
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
+                                <th>Status
+                                    <i className="bi bi-funnel" style={{ textAlign: 'right', cursor: 'pointer', paddingLeft: '5px' }}></i>
+                                </th>
                                 <th>Action</th>
                                 <th>Details</th>
                             </tr>
@@ -357,12 +401,12 @@ const Home = () => {
                                         paginatedTask.length === 0 ?
                                             <>
                                                 <tr>
-                                                    <td colSpan="12" className="image-row">
+                                                    <td colSpan="14" className="image-row">
                                                         <img src={Img} className='noData' alt='nodata' />
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td colSpan="12" className="noDataText">
+                                                    <td colSpan="14" className="noDataText">
                                                         No Data Found!
                                                     </td>
                                                 </tr>
@@ -379,10 +423,10 @@ const Home = () => {
                                                     <td>{e.descriptions}</td>
                                                     <td>{e.remark}</td>
                                                     <td>
-                                                        <span>{e.startDate}</span>
+                                                        <span>{convertDate(e.startDate)}</span>
                                                     </td>
                                                     <td>
-                                                        <span>{e.dueDate}</span>
+                                                        <span>{convertDate(e.dueDate)}</span>
                                                     </td>
                                                     <td>
                                                         {e.status === 'Cancel' ?
@@ -454,7 +498,7 @@ const Home = () => {
                         <button className='mx-1' disabled={true}>Next</button> :
                         <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
                     }
-                    {currentPage === totalPage?
+                    {currentPage === totalPage ?
                         <button className='mx-1' disabled={true}>Last</button> :
                         <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage(totalPage)}>Last</button>
                     }
@@ -707,26 +751,9 @@ const Home = () => {
 
                 {/* Show Details Model */}
 
-                <Modal show={view} onHide={handleViewClose}>
-                    <Modal.Header closeButton />
-                    <h3 className='text-center'>Incident Details</h3>
-                    <Modal.Body><b>Title :</b> {viewDetail && viewDetail.title}</Modal.Body>
-                    <Modal.Body><b>Department Name :</b> {viewDetail && viewDetail.deptName}</Modal.Body>
-                    <Modal.Body><b>Department Email :</b> {viewDetail && viewDetail.deptEmail}</Modal.Body>
 
-                    <Modal.Body><b>Complaint From :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
+                <TaskDetailModal view={view} handleViewClose={handleViewClose} viewDetail={viewDetail} />
 
-                    <Modal.Body><b>Assigned To :</b> {viewDetail && viewDetail.assignedTo}</Modal.Body>
-                    <Modal.Body><b>Remark :</b> {viewDetail && viewDetail.remark}</Modal.Body>
-                    <Modal.Body><b>Description :</b> {viewDetail && viewDetail.descriptions}</Modal.Body>
-                    <Modal.Body><b>Start Date :</b> {viewDetail && viewDetail.startDate}</Modal.Body>
-                    <Modal.Body><b>End Date :</b> {viewDetail && viewDetail.dueDate}</Modal.Body>
-                    <Modal.Body><b>Priority :</b> {viewDetail && viewDetail.priority}</Modal.Body>
-                    <Modal.Body><b>Status :</b> {viewDetail && viewDetail.status}</Modal.Body>
-                    <Modal.Footer>
-                        <Button className='closeBtn' onClick={handleViewClose}> Close </Button>
-                    </Modal.Footer>
-                </Modal>
 
                 {/* show Edit Model */}
 
