@@ -8,6 +8,7 @@ import { url } from './utils/constant';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import TaskDetailModal from './detailModel';
 
 const PublicHome = () => {
     const [myTasks, setMyTasks] = useState([]);
@@ -16,6 +17,18 @@ const PublicHome = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const [date, setDate] = useState({
+        startDate: '',
+        endDate: ''
+    });
+
+    const dateHandleChange = (e) => {
+        const { name, value } = e.target;
+        setDate((newData) => {
+            return ({ ...newData, [name]: value })
+        })
+    }
 
     const [task, setTask] = useState({
         title: '',
@@ -63,9 +76,21 @@ const PublicHome = () => {
         setview(true)
     }
 
+    function convertDate(newDate) {
+        if (!newDate) {
+            return
+        }
+        const parts = newDate.split('-');
+        const newDateFormate = parts[2] + '-' + parts[1] + '-' + parts[0];
+        // console.log(newDateFormate);
+        return newDateFormate;
+    }
+
     const fetchMyAllTask = async () => {
+        const { startDate, endDate } = date;
+
         try {
-            const response = await fetch(`${url}/api/v1/public/getTasks`, {
+            const response = await fetch(`${url}/api/v1/public/getTasks?startDate=${startDate}&endDate=${endDate}`, {
                 method: 'GET',
                 headers: {
                     // 'token': localStorage.getItem('token'),
@@ -73,7 +98,7 @@ const PublicHome = () => {
                 },
             });
             const getResponse = await response.json();
-            // console.log(getResponse);
+            console.log(getResponse);
 
             setMyTasks(getResponse.tasks);
             setLoader(false);
@@ -200,17 +225,36 @@ const PublicHome = () => {
     const totalTask = myTasks?.length;
     const totalPage = Math.ceil(totalTask / pageSize);
 
+    const TaskDetails = ({ task }) => {
+        const createdAt = new Date(task.createdAt);
+        const updatedAt = new Date(task.updatedAt);
+
+        const formatDate = (date) => {
+            return date.toLocaleDateString(); // Example: "7/22/2024"
+        };
+
+        const formatTime = (date) => {
+            return date.toLocaleTimeString(); // Example: "6:38 AM"
+        };
+    }
+
     return (
         <>
             {/* desktop view */}
-            <div className="container table-container-desktop">
+            <div className="container-fluid table-container-desktop">
                 <div className='d-flex justify-content-between'>
                     <div className='mycourses-main-heading'>
                         All Incident
                     </div>
                     <div className='d-flex gap-2'>
+                    <div className='d-flex gap-2'>
+                            <input type='date' value={date.startDate} name='startDate' onChange={dateHandleChange} className='searchBar ' />
+                            <input type='date' value={date.endDate} name='endDate' onChange={dateHandleChange} className='searchBar ' />
+                        </div>
                         <div>
-                            <i className="bi bi-funnel" style={{ fontSize: '1.4rem' }}></i>
+                            <button onClick={fetchMyAllTask} className='viewDetailsOnMyCourse' style={{paddingTop:'2px',paddingBottom:'2px'}} >
+                            <i className="bi bi-funnel" style={{ fontSize: '1rem' }}></i>
+                            </button>
                         </div>
                         <div>
                             <i className="bi bi-search mx-1"></i>
@@ -282,10 +326,10 @@ const PublicHome = () => {
                                                     <td>{e.descriptions}</td>
                                                     <td>{e.remark}</td>
                                                     <td>
-                                                        <span>{e.startDate}</span>
+                                                        <span>{convertDate(e.startDate)}</span>
                                                     </td>
                                                     <td>
-                                                        <span>{e.dueDate}</span>
+                                                        <span>{convertDate(e.dueDate)}</span>
                                                     </td>
                                                     <td>
                                                         {e.status === 'Cancel' ?
@@ -357,7 +401,7 @@ const PublicHome = () => {
                         <button className='mx-1' disabled={true}>Next</button> :
                         <button className='viewDetailsOnMyCourse mx-1' onClick={() => setCurrentPage((prevState) => prevState + 1)}>Next</button>
                     }
-                    {currentPage === totalPage?
+                    {currentPage === totalPage ?
                         <button className='mx-1' disabled={true}>Last</button> :
                         <button className='viewDetailsOnMyCourse' onClick={() => setCurrentPage(totalPage)}>Last</button>
                     }
@@ -533,24 +577,7 @@ const PublicHome = () => {
 
                 {/* Show Details Model */}
 
-                <Modal show={view} onHide={handleViewClose}>
-                    <Modal.Header closeButton />
-                    <h3 className='text-center'>Task Details</h3>
-                    <Modal.Body><b>Title :</b> {viewDetail && viewDetail.title}</Modal.Body>
-                    <Modal.Body><b>Department Name :</b> {viewDetail && viewDetail.deptName}</Modal.Body>
-                    <Modal.Body><b>Department Email :</b> {viewDetail && viewDetail.deptEmail}</Modal.Body>
-                    <Modal.Body><b>Department Number :</b> {viewDetail && viewDetail.deptNumber}</Modal.Body>
-                    <Modal.Body><b>Assigned To :</b> {viewDetail && viewDetail.assignedTo}</Modal.Body>
-                    <Modal.Body><b>Remark :</b> {viewDetail && viewDetail.remark}</Modal.Body>
-                    <Modal.Body><b>Description :</b> {viewDetail && viewDetail.descriptions}</Modal.Body>
-                    <Modal.Body><b>Start Date :</b> {viewDetail && viewDetail.startDate}</Modal.Body>
-                    <Modal.Body><b>End Date :</b> {viewDetail && viewDetail.dueDate}</Modal.Body>
-                    <Modal.Body><b>Priority :</b> {viewDetail && viewDetail.priority}</Modal.Body>
-                    <Modal.Body><b>Status :</b> {viewDetail && viewDetail.status}</Modal.Body>
-                    <Modal.Footer>
-                        <Button className='closeBtn' onClick={handleViewClose}> Close </Button>
-                    </Modal.Footer>
-                </Modal>
+                <TaskDetailModal view={view} handleViewClose={handleViewClose} viewDetail={viewDetail}/>
 
                 {/* show Edit Model */}
 
