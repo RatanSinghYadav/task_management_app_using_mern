@@ -751,7 +751,9 @@ const Home = () => {
 
                 {/* Show Details Model */}
 
+
                 <TaskDetailModal view={view} handleViewClose={handleViewClose} viewDetail={viewDetail} />
+
 
                 {/* show Edit Model */}
 
@@ -799,6 +801,7 @@ const Home = () => {
                                 </div>
 
                                 <div>
+
                                     <Form.Label>Complaint From</Form.Label>
                                     <input value={editDetail.deptNumber} onChange={handleEditChange} name='deptNumber' type='text' className='form-control mb-3 inputBox dueDate' />
                                 </div>
