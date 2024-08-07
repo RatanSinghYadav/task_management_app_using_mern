@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import TaskDetailModal from './detailModel';
 
-let departmentName = ['IT', "Audit", "Preform", 'Electrical', 'Security', 'Safety', 'HR', 'Sales', 'Store', 'Quality', 'Logistics', 'Accounts', 'Management', 'Purchase', 'Marketing', 'Civil', 'Maintenance', Packets "Others"];
+let departmentName = ['IT', "Audit", "Preform", 'Electrical', 'Security', 'Safety', 'HR', 'Sales', 'Store', 'Quality', 'Logistics', 'Accounts', 'Management', 'Purchase', 'Marketing', 'Civil', 'Maintenance', "Packets" "Others"];
 const items = ["Laptop", "Desktop", "Printer", "Scanner", "Networking", "D-365 ERP", "Software/Application", "UPS", "CCTV", "Other Issue"];
 
 
