@@ -67,6 +67,7 @@ const PublicHome = () => {
             headers: {
                 // 'token': localStorage.getItem('token'),
                 'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning':'true',
             }
         })
 
@@ -95,6 +96,7 @@ const PublicHome = () => {
                 headers: {
                     // 'token': localStorage.getItem('token'),
                     'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning':'true',
                 },
             });
             const getResponse = await response.json();
@@ -144,7 +146,7 @@ const PublicHome = () => {
     //             method: "GET",
     //             headers: {
     //                 'token': localStorage.getItem('token'),
-    //                 'Content-Type': 'application/json'
+    //                 'Content-Type': 'application/json',
     //             }
     //         })
 
@@ -167,6 +169,7 @@ const PublicHome = () => {
                 headers: {
                     "Content-Type": "application/json",
                     'token': localStorage.getItem('token'),
+                    'ngrok-skip-browser-warning':'true',
                 },
                 body: JSON.stringify({
                     title: title,
