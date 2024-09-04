@@ -26,15 +26,15 @@ const Home = () => {
     const [task, setTask] = useState({
         title: '',
         deptName: '',
-        deptNumber: '',
-        deptEmail: '',
+        deptNumber: '-',
+        deptEmail: '-',
         assignedTo: '',
         startDate: '',
         dueDate: '',
         status: '',
         priority: '',
-        remark: '',
-        descriptions: '',
+        remark: '-',
+        descriptions: '-',
     })
 
     const [date, setDate] = useState({
