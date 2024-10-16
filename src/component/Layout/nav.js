@@ -78,6 +78,9 @@ const Nav = () => {
       </Link>
       <div className="nav-right">
         <div className='top-desktop-nav'>
+          <Link style={{ textDecoration: 'none' }} to={'/feed'}>
+            <p className='top-desktop-nav-links' >Feed</p>
+          </Link>
           <Link style={{ textDecoration: 'none' }} to={'/user/home'}>
             <p className='top-desktop-nav-links' >Home</p>
           </Link>
