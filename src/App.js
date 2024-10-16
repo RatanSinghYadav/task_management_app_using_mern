@@ -8,6 +8,7 @@ import ProfileEdit from "./component/Auth/ProfileEdit";
 import PublicHome from "./component/publicHome";
 import PublicLayout from "./component/Layout/publicLayout";
 import Dashboard from "./component/admin/dashboard";
+import Feed from "./component/feed";
 
 function App() {
   return (
@@ -24,6 +25,9 @@ function App() {
 
           <Route path="/user/profile" element={<Layout />}>
             <Route exact index element={<ProfileEdit />}></Route>
+          </Route>
+          <Route path="/feed" element={<Layout />}>
+            <Route exact index element={<Feed />}></Route>
           </Route>
 
           <Route path="/login" element={<PublicLayout />}>
