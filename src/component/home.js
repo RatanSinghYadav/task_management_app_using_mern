@@ -677,15 +677,15 @@ const Home = () => {
                                         <option hidden>
                                             select
                                         </option>
-                                        <option>Rakesh Agarwal</option>
-                                        <option>Rajat Saxsena</option>
                                         <option>Abhishek Awasthi</option>
                                         <option>Bhupendra Pal Saxsena</option>
-                                        <option>Neeraj Mehrotra</option>
-                                        <option>Raj</option>
-                                        <option>Sonu</option>
+                                        <option>Rajat Saxsena</option>
+                                        <option>Rakesh Agarwal</option>
+                                        <option>Ratan Singh Yadav</option>
                                         <option>Mohit Sharma</option>
                                         <option>Munish Kumar</option>
+                                        <option>Neeraj Mehrotra</option>
+                                        <option>Sonu</option>
                                     </select>
                                 </div>
                                 <div>
