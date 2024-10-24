@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import swal from 'sweetalert';
 import Img from './Assets/Media/Images/nodata.png'
 import { url } from './utils/constant';
-
+import { LuRefreshCw } from "react-icons/lu";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -320,6 +320,10 @@ const Home = () => {
         fetchMyAllTask();
     }, []);
 
+    const handleRefresh = () => {
+        window.location.reload();
+    }
+
     return (
         <>
 
@@ -331,6 +335,9 @@ const Home = () => {
                     </div>
                     <div className='d-flex gap-2'>
                         <div className='d-flex gap-2'>
+                            <span onClick={handleRefresh} style={{ fontSize: '14px', fontWeight: '600', cursor: 'pointer', marginTop: '5px' }}>
+                                <LuRefreshCw /> Refresh
+                            </span>
                             <input type='date' value={date.startDate} name='startDate' onChange={dateHandleChange} className='searchBar ' />
                             <input type='date' value={date.endDate} name='endDate' onChange={dateHandleChange} className='searchBar ' />
                         </div>
@@ -414,7 +421,7 @@ const Home = () => {
                                             :
                                             paginatedTask.map((e, index) => (
                                                 <tr key={e._id}>
-                                                    <td>UN0000{((currentPage - 1) * 10) + (index + 1)}</td>
+                                                    <td>{e._id.slice(1, 10).toUpperCase()}</td>
                                                     <td>{e.title}</td>
                                                     <td>{e.deptName}</td>
                                                     <td>{e.deptNumber}</td>

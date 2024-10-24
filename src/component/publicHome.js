@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import swal from 'sweetalert';
 import Img from './Assets/Media/Images/nodata.png'
 import { url } from './utils/constant';
-
+import { LuRefreshCw } from "react-icons/lu";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -238,6 +238,10 @@ const PublicHome = () => {
         };
     }
 
+    const handleRefresh = () => {
+        window.location.reload();
+    }
+
     return (
         <>
             {/* desktop view */}
@@ -247,13 +251,16 @@ const PublicHome = () => {
                         All Incident
                     </div>
                     <div className='d-flex gap-2'>
-                    <div className='d-flex gap-2'>
+                        <span onClick={handleRefresh} style={{ fontSize: '14px', fontWeight: '600',cursor: 'pointer',marginTop:'5px' }}>
+                            <LuRefreshCw /> Refresh
+                        </span>
+                        <div className='d-flex gap-2'>
                             <input type='date' value={date.startDate} name='startDate' onChange={dateHandleChange} className='searchBar ' />
                             <input type='date' value={date.endDate} name='endDate' onChange={dateHandleChange} className='searchBar ' />
                         </div>
                         <div>
-                            <button onClick={fetchMyAllTask} className='viewDetailsOnMyCourse' style={{paddingTop:'2px',paddingBottom:'2px'}} >
-                            <i className="bi bi-funnel" style={{ fontSize: '1rem' }}></i>
+                            <button onClick={fetchMyAllTask} className='viewDetailsOnMyCourse' style={{ paddingTop: '2px', paddingBottom: '2px' }} >
+                                <i className="bi bi-funnel" style={{ fontSize: '1rem' }}></i>
                             </button>
                         </div>
                         <div>
@@ -317,7 +324,7 @@ const PublicHome = () => {
                                             :
                                             paginatedTask?.map((e, index) => (
                                                 <tr key={e._id}>
-                                                    <td>UN0000{((currentPage - 1) * 10) + (index + 1)}</td>
+                                                    <td>{e._id.slice(1, 10).toUpperCase()}</td>
                                                     <td>{e.title}</td>
                                                     <td>{e.deptName}</td>
                                                     <td>{e.deptNumber}</td>
@@ -577,7 +584,7 @@ const PublicHome = () => {
 
                 {/* Show Details Model */}
 
-                <TaskDetailModal view={view} handleViewClose={handleViewClose} viewDetail={viewDetail}/>
+                <TaskDetailModal view={view} handleViewClose={handleViewClose} viewDetail={viewDetail} />
 
                 {/* show Edit Model */}
 
