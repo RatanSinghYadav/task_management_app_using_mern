@@ -251,7 +251,7 @@ const PublicHome = () => {
                         All Incident
                     </div>
                     <div className='d-flex gap-2'>
-                        <span onClick={handleRefresh} style={{ fontSize: '14px', fontWeight: '600',cursor: 'pointer',marginTop:'5px' }}>
+                        <span onClick={handleRefresh} style={{ fontSize: '14px', fontWeight: '600', cursor: 'pointer', marginTop: '5px' }}>
                             <LuRefreshCw /> Refresh
                         </span>
                         <div className='d-flex gap-2'>
@@ -288,8 +288,10 @@ const PublicHome = () => {
                                 <th>Due Date</th>
                                 <th>Priority</th>
                                 <th>Status</th>
-                                {/* <th>Action</th> */}
-                                <th>Details</th>
+                                <th>Action</th>
+                                <th>CreatedAt</th>
+                                <th>UpdatedAt</th>
+                                {/* <th>Details</th> */}
                             </tr>
                         </thead>
                         <tbody className='table-body'>
@@ -371,17 +373,23 @@ const PublicHome = () => {
                                                             }`
                                                         }>{e.status}</span>
                                                     </td>
-                                                    {/* <i onClick={() => pleaseLoginFirst(e._id)} className="bi bi-trash-fill"></i> */}
-                                                    {/* <td className='actionBtn'>
+                                                    <td className='actionBtn'>
+                                                        <i onClick={() => pleaseLoginFirst(e._id)} className="bi bi-trash-fill"></i>
                                                         {e.status === "Cancel" ?
                                                             <i className="bi bi-pencil-square disabled"
                                                                 style={{ pointerEvents: 'none', opacity: 0.5, color: 'black' }}></i> :
                                                             <i onClick={() => pleaseLoginFirst(e._id)} className="bi bi-pencil-square"></i>
                                                         }
-                                                    </td> */}
-                                                    <td>
-                                                        <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
                                                     </td>
+                                                    <td>
+                                                        {new Date(e.createdAt).toLocaleString('en-GB', { hour12: true }).toUpperCase()}
+                                                    </td>
+                                                    <td>
+                                                        {new Date(e.updatedAt).toLocaleString('en-GB', { hour12: true }).toUpperCase()}
+                                                    </td>
+                                                    {/* <td>
+                                                        <button onClick={() => showDetails(e._id)} className='viewDetailsOnMyCourse'>View Details</button>
+                                                    </td> */}
                                                 </tr>
                                             ))
 
